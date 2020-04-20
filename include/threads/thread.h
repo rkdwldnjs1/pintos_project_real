@@ -87,6 +87,10 @@ struct thread {
 	enum thread_status status;          /* Thread state. */
 	char name[16];                      /* Name (for debugging purposes). */
 	int priority;                       /* Priority. */
+    	int64_t wake_time; // for timer
+
+	bool donated;
+	int donated_priority;
 
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
@@ -134,5 +138,10 @@ int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
 void do_iret (struct intr_frame *tf);
+
+void sleep_thread(int64_t);
+void time_to_wake_up(int64_t);
+bool prior_wake_time(const struct list_elem *, const struct list_elem *, void *aux);
+
 
 #endif /* threads/thread.h */
