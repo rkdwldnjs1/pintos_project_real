@@ -1,4 +1,0 @@
-WARNING: Image format was not specified for '/tmp/tmpdcsq9fc_.dsk' and probing guessed raw.
-         Automatically detecting the format is dangerous for raw images, write operations on block 0 will be restricted.
-         Specify the 'raw' format explicitly to remove the restrictions.
-qemu-system-x86_64: terminating on signal 1 from pid 447 (<unknown process>)

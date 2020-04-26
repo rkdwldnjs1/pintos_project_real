@@ -425,6 +425,51 @@ done:
 	return success;
 }
 
+void
+argument_passing (const char *file_name, struct intr_frame *if_){
+    char file[128];
+    char *token;
+    char *ptr;
+
+    char *argv[32]; //arbitrary
+    uint64_t adr[32];
+    int argc = 0;
+
+    strlcpy(file, file_name, strlen(file_name)+1); //맨 마지막 null
+    
+    token = strtok_r(file," ",&ptr);
+    while(token){
+        argv[argc] = token;
+        token = strtok_r(NULL," ",&ptr);
+        argc = argc + 1;
+    }
+
+    //push argv[][] first
+    for(int i = argc-1; i>=0; i--){
+        if_->rsp -= strlen(argv[i])+1; //null 포함
+        strlcpy(if_->rsp, argv[i], strlen(argv[i])+1);
+        adr[i] = (uint64_t)if_->rsp;
+    }
+    // word-align round the stack pointer down to a multiple of 8
+    while(( (uint64_t)if_->rsp )%8 != 0){
+        if_->rsp -= 1;
+    }
+    //push argv[]
+    if_->rsp -= 8; //64비트 시스템 포인터 크기
+    *((int *)if_->rsp) = 0; //push NULL
+
+    for(int j = argc-1; j>=0; j--){
+        if_->rsp -= 8;
+        *((uint64_t *)if_->rsp) = adr[j];
+    }
+    //push return address
+    if_->rsp -= 8;
+    *((int *)if_->rsp) = 0;
+    
+    //printf("1/n 1/n");
+    //hex_dump(if_->rsp)
+}   
+
 
 /* Checks whether PHDR describes a valid, loadable segment in
  * FILE and returns true if so, false otherwise. */

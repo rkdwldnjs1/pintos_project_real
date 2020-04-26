@@ -1,3 +1,4 @@
+#include "threads/thread.h"
 #include <debug.h>
 #include <stddef.h>
 #include <random.h>
@@ -481,10 +482,10 @@ init_thread (struct thread *t, const char *name, int priority) {
 	t->tf.rsp = (uint64_t) t + PGSIZE - sizeof (void *);
 	t->priority = priority;
 	t->magic = THREAD_MAGIC;
-    t->original_priority = priority;
+    //t->original_priority = priority;
     t->donated = 0;
-    lock_init(t->waiting_lock);
-    list_init(&t->locks);
+    //lock_init(t->waiting_lock);
+    //list_init(&t->locks);
     //t->store_priority = 63;
 }
 
@@ -693,7 +694,7 @@ sleep_thread(int64_t tick){
    }
 */
    //list_push_front(&sleep_thread_list, &thr->elem);
-  
+   
    if(list_empty(&sleep_thread_list)){
        list_push_back(&sleep_thread_list, &thr->elem);
    }
@@ -722,8 +723,10 @@ time_to_wake_up(int64_t now_time){
         printf("%lld\n",list_entry(list_begin(&sleep_thread_list), struct thread, elem)->wake_time);
         thread_unblock(list_entry(list_begin(&sleep_thread_list), struct thread, elem));
     }*/
+    //printf("%d\n", now_time);
 
     if(!list_empty (&sleep_thread_list)){
+        //printf("%d\n", now_time);
         ASSERT(list_entry(list_begin(&sleep_thread_list), struct thread, elem)->status == THREAD_BLOCKED);
 
         while (list_entry(list_begin(&sleep_thread_list), struct thread, elem)->wake_time <= now_time){
@@ -735,6 +738,9 @@ time_to_wake_up(int64_t now_time){
             thread_unblock(list_entry(list_pop_front(&sleep_thread_list), struct thread, elem));
             //printf("1\n");
             //printf("%lld\n",list_entry(list_front(&sleep_thread_list), struct thread, elem)->wake_time);
+            if(list_entry(list_begin(&sleep_thread_list), struct thread, elem)->wake_time == 0){
+                break;
+            }
         }
     }
   

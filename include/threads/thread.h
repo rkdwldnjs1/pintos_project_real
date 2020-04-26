@@ -150,6 +150,7 @@ void do_iret (struct intr_frame *tf);
 void sleep_thread(int64_t);
 void time_to_wake_up(int64_t);
 bool prior_wake_time(const struct list_elem *, const struct list_elem *, void *aux);
+bool larger_priority(const struct list_elem *, const struct list_elem *, void *aux);
 
 
 #endif /* threads/thread.h */
