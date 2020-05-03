@@ -134,7 +134,9 @@ thread_start (void) {
 	/* Create the idle thread. */
 	struct semaphore idle_started;
 	sema_init (&idle_started, 0);
-	thread_create ("idle", PRI_MIN, idle, &idle_started);
+	//thread_create ("idle", 0, idle, &idle_started);
+    thread_create("idle",PRI_MIN,idle,&idle_started);
+    //printf("%d\n", thread_get_priority());
 
 	/* Start preemptive thread scheduling. */
 	intr_enable ();
@@ -193,6 +195,8 @@ thread_create (const char *name, int priority,
 	tid_t tid;
 
 	ASSERT (function != NULL);
+	ASSERT (priority <= PRI_MAX);
+	ASSERT (priority >= PRI_MIN);
 
 	/* Allocate thread. */
 	t = palloc_get_page (PAL_ZERO);
@@ -684,33 +688,20 @@ sleep_thread(int64_t tick){
    thr = thread_current();
 
    ASSERT(thr != idle_thread);
-   //list_init(sleep_thread_list);
-
-   thr->wake_time = tick; //absolute time
-   //printf("%lld\n",tick);
-/*    
-   if(list_empty(&sleep_thread_list)){
-        ASSERT(1==2);
-   }
-*/
-   //list_push_front(&sleep_thread_list, &thr->elem);
    
+   thr->wake_time = tick; //absolute time
+   
+  
    if(list_empty(&sleep_thread_list)){
        list_push_back(&sleep_thread_list, &thr->elem);
    }
    else{
-       //ASSERT(!list_empty(&sleep_thread_list));
-       //printf("%d\n",n);
        list_insert_ordered(&sleep_thread_list, &thr->elem, prior_wake_time, 0);
 
    }
-   //printf("%lld\n",list_entry(list_begin(&sleep_thread_list), struct thread, elem)->wake_time);
-   //printf("%lld\n",list_entry(list_next(list_begin(&sleep_thread_list)), struct thread, elem)->wake_time);
-   //printf("%d\n",n);
-   //ASSERT(1==2);
-
+  
    thread_block();
-   //ASSERT(1==2);
+   
 
    intr_set_level(old_level);
 }
@@ -747,8 +738,9 @@ time_to_wake_up(int64_t now_time){
     //ASSERT(1==2);
     
 }
-
+/*
 void
 list_sort_ready(void) {
 	list_sort(&ready_list, larger_priority, 0);
 }
+*/

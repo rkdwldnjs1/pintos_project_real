@@ -16,6 +16,7 @@ void
 test_priority_sema (void) 
 {
   int i;
+
   
   /* This test does not work with the MLFQS. */
   ASSERT (!thread_mlfqs);
